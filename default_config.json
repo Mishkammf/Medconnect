@@ -1,0 +1,23 @@
+{
+  "database": {
+    "db": "quiz_builder",
+    "user": "root",
+    "password": "rootsql",
+    "host": "localhost",
+    "port": "3306",
+    "conn_max_age": 0
+  },
+   "backend_api": {
+    "static_url_path": "http://172.16.4.34:8001/static",
+    "static_path": "static"
+  },
+  "default_timezone": "+04:00",
+  "disable_existing_loggers": 0,
+  "api_host_port": 8000,
+  "mobile_sign_in_freq": 300,
+  "spoof": {
+    "spoof_detection_api": "http://172.16.2.35:8003/api/v2/spoof",
+    "check_spoof": 0
+  },
+  "token_expiry_minutes": 30
+}
