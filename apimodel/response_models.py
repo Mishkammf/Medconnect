@@ -39,15 +39,34 @@ class UserInfoResponse(DBObjectResponse):
     email: str = None
 
 
+class HospitalInfoResponse(DBObjectResponse):
+    hospital_key: int
+    name: str
+    total_gicu_beds_available: int = None
+    total_gicu_beds_used: int = None
+    total_sicu_beds_available: int = None
+    total_sicu_beds_used: int = None
 
 
+class TransferRequestInfoResponse(DBObjectResponse):
+    transfer_request_key: int
+    doctor_id: int
+    target_hospital_id: int
+    patient_id: int
+    status: str
 
+class BedTypeCountResponse(BaseModel):
+    hospital_name: str = None
+    hospital_key: int = None
+    bed_count: int = None
 
-
-
-
-
-
-
+class AmbulanceRequestInfoResponse(DBObjectResponse):
+    id: int
+    ambulance_id: int
+    doctor_id: int
+    start_hospital_id: int
+    end_hospital_id: int
+    created_datetime: datetime.datetime = None
+    status: str
 
 

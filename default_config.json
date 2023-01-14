@@ -1,8 +1,8 @@
 {
   "database": {
-    "db": "quiz_builder",
+    "db": "medconnectdb",
     "user": "root",
-    "password": "rootsql",
+    "password": "mishka123",
     "host": "localhost",
     "port": "3306",
     "conn_max_age": 0

@@ -49,7 +49,7 @@ def create(db, db_model, item_data):
     except IntegrityError as e:
         db.rollback()
         raise DatabaseIntegrityException(str(e), db_model=db_model)
-    except SQLAlchemyError as e:
+    except IndexError as e:
         raise DatabaseException(str(e))
 
 
@@ -124,7 +124,7 @@ def retrieve(db, db_model, query, filters, select_fields, joins=None, join_type=
             record_count = len(temp_query.filter(filters).all())
 
         return item_list, record_count
-    except SQLAlchemyError as e:
+    except IndexError as e:
         raise DatabaseException(str(e))
 
 

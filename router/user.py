@@ -1,14 +1,13 @@
-
 from typing import List
 
-from fastapi import APIRouter, Depends, Header, Response, Body, Form
+from fastapi import APIRouter, Depends, Header, Response, Body, Form, Query
 from sqlalchemy import and_, or_
 from sqlalchemy.orm import Session
 from starlette import status
 
 from apimodel.models import QueryModel
 from apimodel.params import UserInfoSortingParam, ActiveStatus
-from apimodel.request_models import UserInfoEdit, UserInfo, pagination_parameters, db_and_user, user_filters, Struct
+from apimodel.request_models import UserInfoEdit, UserInfo, pagination_parameters, db_and_user, Struct
 from apimodel.response_models import APISuccess, UserInfoResponse, APIError, \
     Status
 from common.application_roles import ALLOW_TO_DELETE_USERS, ALLOW_TO_UPDATE_USERS, \
@@ -71,13 +70,6 @@ def delete_users(user_keys: List[int] = Body(...), db: Session = Depends(get_db)
     id_list = user_keys
     deleted_ids = []
     if id_list is not None:
-        temp_users = db.query(User).filter(User.user_key.in_(id_list)).all()
-        member_ids = {}
-        for temp_user in temp_users:
-            if temp_user.default:
-                id_list.remove(temp_user.user_key)
-            member_ids[temp_user.user_key] = temp_user.member_id
-
         deleted_ids = delete_multiple(db, User, primary_key_attribute, id_list)
 
     if len(deleted_ids) == len(id_list):
@@ -90,7 +82,7 @@ def delete_users(user_keys: List[int] = Body(...), db: Session = Depends(get_db)
 
 @router.get("", response_model=List[UserInfoResponse])
 def get_all_users(response: Response, text_search: str = None,
-                  user_filter_params: dict = Depends(user_filters),
+                  user_group_keys: str = Query([]),
                   sorting_param: UserInfoSortingParam = Header(UserInfoSortingParam.CREATED_DATE),
                   pagination_values: dict = Depends(pagination_parameters),
                   db_and_user_param: dict = Depends(db_and_user)):
@@ -99,20 +91,13 @@ def get_all_users(response: Response, text_search: str = None,
     ***Return*** : All the users installed in the system
     """
     db, user = db_and_user_param[db_instance], db_and_user_param[active_user]
-    authentication_service.validate(db, int(user[user_group_key_string]), [ALLOW_TO_GET_USERS])
+    # authentication_service.validate(db, int(user[user_group_key_string]), [ALLOW_TO_GET_USERS])
     text_search = text_search.strip() if text_search is not None else ''
     query = update_sort_and_pagination_in_query(QueryModel(), sorting_param, pagination_values)
-    filters = User.member_id.in_(query.member_ids)
-    if user_filter_params[user_group_keys_param]:
-        user_group_keys = [int(key) for key in user_filter_params[user_group_keys_param].split(" ")]
+    filters = True
+    if user_group_keys:
+        user_group_keys = [int(key) for key in user_group_keys.split(" ")]
         filters = and_(filters, User.user_group_key.in_(user_group_keys))
-    if user_filter_params[active_status_param] == ActiveStatus.ACTIVE:
-        filters = and_(filters, User.is_active == 1)
-    elif user_filter_params[active_status_param] == ActiveStatus.INACTIVE:
-        filters = and_(filters, User.is_active == 0)
-    if user_filter_params[shift_type_param]:
-        shift_types = [int(shift_type) for shift_type in user_filter_params[shift_type_param].split(",")]
-        filters = and_(filters, User.shift_type.in_(shift_types))
     return get_user_details(response, db, text_search.strip(), query, 0, filters)
 
 
@@ -126,12 +111,9 @@ def get_user_details(response, db, text_search, query, user_id, filters=True):
     :param response: response object
     """
     search_filter = get_search_filter(text_search)
-
     filters = and_(filters, or_(User.user_key == user_id, user_id == 0),
                    or_(User.user_login_id.like(search_filter), User.first_name.like(search_filter),
-                       User.last_name.like(search_filter),
-                       User.member_id.like(search_filter)))
-
+                       User.last_name.like(search_filter)))
     select_fields = [User.created_datetime,
                      User.modified_datetime, User.first_name, User.last_name,  User.user_key,
 
@@ -139,7 +121,6 @@ def get_user_details(response, db, text_search, query, user_id, filters=True):
     db_model = User
     results, total_records = retrieve(db, db_model, query, filters, select_fields, row_number=True)
     response.headers["total-record-count"] = str(total_records)
-
     return [UserInfoResponse(
                              created_date=result.created_datetime,
                              modified_date=result.modified_datetime,

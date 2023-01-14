@@ -24,25 +24,38 @@ class SignUpUserInfo(BaseModel):
 
 class UserInfo(SignUpUserInfo):
     tenant_key: str = None
+    user_login_id: str = None
+    user_password: str = None
     user_group_key: int = None
     default: int = 0
     is_active: bool = 0
     enable_login: bool = 0
-    title_key: int = None
-    project_key: int = None
-    location_key: int = None
     api_access_only: bool = 0
     enable_multiple_logins: bool = 0
     concurrent_logging_count: int = 1
     expire_token: bool = 0
-    dob: date = None
-    gender: Literal["M", "F"] = None
-    vector: bytes = None
     created_date: datetime = None
     modified_date: datetime = None
-    shift_type: Literal[1, 2, 3] = None
     email: str = None
     mobile_number: str = None
+
+
+class HospitalInfo(BaseModel):
+    hospital_key: int = None
+    name: str
+    total_gicu_beds_available: int = None
+    total_gicu_beds_used: int = None
+    total_sicu_beds_available: int = None
+    total_sicu_beds_used: int = None
+
+
+class HospitalInfoEdit(BaseModel):
+    hospital_key: int = None
+    name: str
+    total_gicu_beds_available: int = None
+    total_gicu_beds_used: int = None
+    total_sicu_beds_available: int = None
+    total_sicu_beds_used: int = None
 
 
 class UserInfoEdit(BaseModel):
@@ -69,6 +82,43 @@ class UserInfoEdit(BaseModel):
     shift_type: Literal[1, 2, 3] = None
 
 
+class TransferRequestInfo(BaseModel):
+    transfer_request_key: int
+    doctor_id: int
+    target_hospital_id: int
+    patient_id: int = None
+    created_datetime: datetime = None
+    status: str = None
+
+
+class TransferRequestInfoEdit(BaseModel):
+    transfer_request_key: int
+    doctor_id: int
+    target_hospital_id: int
+    patient_id: int = None
+    created_datetime: datetime = None
+    status: str = None
+
+
+class AmbulanceRequestInfo(BaseModel):
+    id: int
+    ambulance_id: int
+    doctor_id: int
+    start_hospital_id: int
+    end_hospital_id: int
+    created_datetime: datetime = None
+    status: str
+
+
+class AmbulanceRequestInfoEdit(BaseModel):
+    id: int
+    ambulance_id: int
+    doctor_id: int
+    start_hospital_id: int
+    end_hospital_id: int
+    created_datetime: datetime = None
+    status: str
+
 
 class LoginInfo(BaseModel):
     ip_address: IPv4Address = None
@@ -81,8 +131,9 @@ class UserLoginInfo(LoginInfo):
     user_key: int
 
 
-class Struct():
+class Struct:
     pass
+
 
 class UserTokenInfo(BaseModel):
     user_key: int
@@ -90,7 +141,6 @@ class UserTokenInfo(BaseModel):
     token_expiry: datetime = datetime.utcnow()
     created_datetime: datetime = datetime.utcnow()
     modified_datetime: datetime = datetime.utcnow()
-
 
 
 async def pagination_parameters(last_record: int = Header(0), max_records: int = Header(20),
@@ -103,15 +153,9 @@ async def timestamp_filters(start_date: datetime = Query(...), end_date: datetim
     return {start_date_param: start_date, end_date_param: end_date, time_zone_param: time_zone}
 
 
-async def db_and_user(db: Session = Depends(get_db), user: {} = Depends(get_current_active_user)):
-    return {db_instance: db, active_user: user}
-
-
-async def user_filters(shift_type: str = Query([]), active_status: ActiveStatus = ActiveStatus.BOTH,
-                       user_group_keys: str = Query([])):
-    return {shift_type_param: shift_type, active_status_param: active_status, user_group_keys_param: user_group_keys}
+async def db_and_user(db: Session = Depends(get_db)):
+    return {db_instance: db, active_user: 345}
 
 
 async def admin_filters(active_status: ActiveStatus = ActiveStatus.BOTH, admin_group_keys: str = Query([])):
     return {active_status_param: active_status, admin_group_keys_param: admin_group_keys}
-

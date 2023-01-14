@@ -10,8 +10,9 @@ from apimodel.response_models import APIError
 from common.config_manager import get_config
 from exceptions.custom_exceptions import CustomAPIException
 from init import COMMON_API_PREFIX, static_path
-from router import user, token,  \
-    session
+from router import user, token, \
+    session, transferrequest, hospital, ambulancerequest
+
 app = FastAPI(
     title="Medconnect API",
     version="1.0.0",
@@ -40,6 +41,8 @@ async def custom_exception_handler(request: Request, exception: CustomAPIExcepti
 app.include_router(token.router, prefix=f"{COMMON_API_PREFIX}/token", tags=["Token"])
 app.include_router(session.router, prefix=f"{COMMON_API_PREFIX}/session", tags=["Session"])
 app.include_router(user.router, prefix=f"{COMMON_API_PREFIX}/users", tags=["Users"])
-
+app.include_router(hospital.router, prefix=f"{COMMON_API_PREFIX}/hospitals", tags=["Hospitals"])
+app.include_router(transferrequest.router, prefix=f"{COMMON_API_PREFIX}/transferrequest", tags=["TransferRequests"])
+app.include_router(ambulancerequest.router, prefix=f"{COMMON_API_PREFIX}/ambulancerequest", tags=["AmbulanceRequests"])
 if __name__ == "__main__":
     uvicorn.run("fast_api:app", host="0.0.0.0", port=get_config("api_host_port"), reload=True)

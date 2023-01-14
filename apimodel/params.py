@@ -53,7 +53,6 @@ class MemberTitleSortingParam(str, Enum):
     MODIFIED_USER = "modified_user"
 
 
-
 class MemberActivitySortingParam(str, Enum):
     MEMBER_ID = "member_id"
     FIRST_NAME = "first_name"
@@ -237,10 +236,12 @@ class ActiveStatus(str, Enum):
     INACTIVE = "inactive"
     BOTH = "both"
 
+
 class TrialStatus(str, Enum):
     TRIAL = "trial"
     BUSINESS = "business"
     BOTH = "both"
+
 
 class Device(str, Enum):
     API = "0"
@@ -259,6 +260,7 @@ class PresentStatus(str, Enum):
     PRESENT = "Present"
     ABSENT = "Absent"
     BOTH = "Both"
+
 
 class RecordType(str, Enum):
     MANUAL = es_manual_record_type
@@ -317,11 +319,13 @@ class UserRoleSortingParam(str, Enum):
     USER_ROLE = "user_role"
     USER_ROLE_KEY = "user_role_key"
 
+
 class AdminRoleSortingParam(str, Enum):
     ADMIN_ROLE = "admin_role"
     ADMIN_ROLE_KEY = "admin_role_key"
 
-class AggregatePeriod(str,Enum):
+
+class AggregatePeriod(str, Enum):
     HOUR = "hour"
     MINUTE = "minute"
     NONE = "none"
@@ -340,5 +344,21 @@ class CameraType(str, Enum):
 
 class CountStatsSortingParam(str, Enum):
     TIMESTAMP = "timestamp"
-    COUNT= "count"
+    COUNT = "count"
+
+
+class HospitalInfoSortingParam(str, Enum):
+    NAME = "name"
+    HOSPITAL_KEY = "hospital_key"
+
+
+class TransferRequestInfoSortingParam(str, Enum):
+    TRANSFER_REQUEST_KEY = "transfer_request_key"
+    DOCTOR_ID = "doctor_id"
+
+class AmbulanceRequestInfoSortingParam(str, Enum):
+    id = None
+    ID = "id"
+    AMBULANCE_ID = "ambulance_id"
+    DOCTOR_ID = "doctor_id"
 
